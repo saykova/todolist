@@ -2,12 +2,17 @@ import React from 'react';
 import { StyleSheet, Text, View, Button } from 'react-native'; 
 import ToDoDetails from './ToDoDetails';
 
-const ToDos = (props) => { 
+const ToDos = ({ todos, deleteTodoItem }) => { 
     return (
         <View>
-            { props.todos.map((todo, index) => {
+            { todos.map((todo, index) => {
                 return (
-                    <ToDoDetails key={index} todoitem={todo}></ToDoDetails>
+                    <ToDoDetails 
+                        deleteTodoItem={deleteTodoItem}
+                        key={index}
+                        index={index}
+                        todoitem={todo}>                            
+                    </ToDoDetails>
                 )
             })
             }
