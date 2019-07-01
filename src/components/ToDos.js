@@ -11,7 +11,8 @@ const ToDos = ({ todos, deleteTodoItem }) => {
                         deleteTodoItem={deleteTodoItem}
                         key={index}
                         index={index}
-                        todoitem={todo}>                            
+                        todoitem={todo}
+                        style={[{ flex: 1 }]}>                            
                     </ToDoDetails>
                 )
             })

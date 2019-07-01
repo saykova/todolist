@@ -49,12 +49,14 @@ export default class Homescreen extends Component {
         return (
             <View style={styles.container}>
                 
-                <ToDos todos={this.state.todos} deleteTodoItem={this.deleteTodoItem} />
+                <View style={styles.todosContainer}>
+                    <ToDos todos={this.state.todos} deleteTodoItem={this.deleteTodoItem} />
+                </View>
 
                 <View style={styles.textInputContainer}>
                     <TextInput 
                         style={styles.textInput}
-                        placeholder="Task name"
+                        placeholder="New task"
                         value={this.state.newTaskName}
                         onChangeText={this.handleTaskNameChanged}
                     />
