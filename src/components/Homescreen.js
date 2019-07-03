@@ -1,25 +1,32 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Button, TextInput } from 'react-native';
+import { AsyncStorage, StyleSheet, Text, View, Button, TextInput } from 'react-native';
 import ToDos from "./ToDos";
 
 export default class Homescreen extends Component {
     state = {
-        todos: [
-            {
-                id: 1,
-                name: 'Wash the dishes',
-                status: 'To do'
-            },
-            {
-                id: 2,
-                name: 'Learn ReactNative',
-                status: 'In process'
-            }
-        ],
-        newTaskName: ''
+        todos: [],
+        newTaskName: '',
+        taskNewName: ''
     }
 
-    addToDo = () => {
+    componentDidMount = async () => {
+        await this.retrieveTodos();
+    }
+
+    retrieveTodos = async () => {
+        try {
+            const getTodos = await AsyncStorage.getItem('todos');
+            
+            if (getTodos !== null) {
+                this.setState({ todos: JSON.parse(getTodos) });
+            }
+            
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    addToDo = async () => {
 
         if(this.state.newTaskName != '') {
             let toDo = {
@@ -29,36 +36,60 @@ export default class Homescreen extends Component {
 
             const newTodos = this.state.todos;
             newTodos.push(toDo);
-            this.setState({ todos: newTodos });
-            this.setState({ newTaskName: '' });
+            this.setState({ todos: newTodos, newTaskName: '' });
+
+            // save data to the local storage
+            try {
+                await AsyncStorage.setItem('todos', JSON.stringify(newTodos));
+            } catch (error) {
+                console.log(error);                
+            }
         }
+        
     }
 
-    deleteTodoItem = (indexItem) => {
+    deleteTodoItem = async (indexItem) => {
+
         const newTodos = this.state.todos;
         newTodos.splice(indexItem, 1);
         this.setState({ todos: newTodos });
+
+        // update data
+        try {
+            await AsyncStorage.setItem('todos', JSON.stringify(newTodos));
+        } catch (error) {
+            console.log(error);                
+        }
+
     }
 
-    handleTaskNameChanged = (newTaskName) => {
+    handleNewTaskNameChanged = (newTaskName) => {
         this.setState({newTaskName});
+    }
+
+    handleTaskNameChanged = (index, newTaskName) => {
+        let newTodos = this.state.todos;
+        newTodos[index].name = newTaskName;
+        this.setState({todos: newTodos});
     }
 
     render() {
 
         return (
-            <View style={styles.container}>
-                
-                <View style={styles.todosContainer}>
-                    <ToDos todos={this.state.todos} deleteTodoItem={this.deleteTodoItem} />
-                </View>
+
+            <View style={styles.container}>                
+                { this.state.todos ? 
+                    <View style={styles.todosContainer}>
+                        <ToDos todos={this.state.todos} deleteTodoItem={this.deleteTodoItem} handleTaskNameChanged={this.handleTaskNameChanged} />
+                    </View> : null
+                }
 
                 <View style={styles.textInputContainer}>
                     <TextInput 
                         style={styles.textInput}
                         placeholder="New task"
                         value={this.state.newTaskName}
-                        onChangeText={this.handleTaskNameChanged}
+                        onChangeText={this.handleNewTaskNameChanged}
                     />
                 </View>
 
@@ -73,8 +104,6 @@ export default class Homescreen extends Component {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        // justifyContent: 'center',
-        // paddingHorizontal: 20,
         paddingLeft: 10,
         paddingRight: 10,
         paddingTop: 60,

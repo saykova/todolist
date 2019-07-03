@@ -1,14 +1,15 @@
 import React from 'react';
-import { StyleSheet, Text, View, Button } from 'react-native'; 
+import { View } from 'react-native'; 
 import ToDoDetails from './ToDoDetails';
 
-const ToDos = ({ todos, deleteTodoItem }) => { 
+const ToDos = ({ todos, deleteTodoItem, handleTaskNameChanged }) => { 
     return (
         <View>
             { todos.map((todo, index) => {
                 return (
                     <ToDoDetails 
                         deleteTodoItem={deleteTodoItem}
+                        handleTaskNameChanged={handleTaskNameChanged}
                         key={index}
                         index={index}
                         todoitem={todo}
